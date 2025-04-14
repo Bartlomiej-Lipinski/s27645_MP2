@@ -1,4 +1,3 @@
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
@@ -10,7 +9,8 @@ public class Mechanic {
     private String surname;
     private Set<Employment> employments = new HashSet<>();
 
-    public Mechanic(String specialization, String name, String surname) {
+    public Mechanic(String specialization, String name, String surname, Employment employment) {
+        employments.add(employment);
         this.specialization = specialization;
         this.name = name;
         this.surname = surname;
@@ -38,8 +38,8 @@ public class Mechanic {
     }
 
     public void setSpecialization(String specialization) {
-        checkForNullValue(specialization,"Specialization cannot be null");
-        checkStringForEmptyAndBlank(specialization,"Specialization cannot be empty or blank");
+        checkForNullValue(specialization, "Specialization cannot be null");
+        checkStringForEmptyAndBlank(specialization, "Specialization cannot be empty or blank");
         this.specialization = specialization;
     }
 
@@ -48,8 +48,8 @@ public class Mechanic {
     }
 
     public void setName(String name) {
-        checkForNullValue(name,"Name cannot be null");
-        checkStringForEmptyAndBlank(name,"Name cannot be empty or blank");
+        checkForNullValue(name, "Name cannot be null");
+        checkStringForEmptyAndBlank(name, "Name cannot be empty or blank");
         this.name = name;
     }
 
@@ -58,10 +58,11 @@ public class Mechanic {
     }
 
     public void setSurname(String surname) {
-        checkForNullValue(surname,"Surname cannot be null");
-        checkStringForEmptyAndBlank(surname,"Surname cannot be empty or blank");
+        checkForNullValue(surname, "Surname cannot be null");
+        checkStringForEmptyAndBlank(surname, "Surname cannot be empty or blank");
         this.surname = surname;
     }
+
     private void checkStringForEmptyAndBlank(String string, String message) {
         if (string.isEmpty()) {
             throw new IllegalArgumentException(message);
@@ -70,12 +71,14 @@ public class Mechanic {
             throw new IllegalArgumentException(message);
         }
     }
+
     private void checkForNullValue(String string, String message) {
         if (string == null) {
             throw new IllegalArgumentException(message);
         }
     }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////overrides
+
+    /// /////////////////////////////////////////////////////////////////////////////////////////////////////////overrides
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

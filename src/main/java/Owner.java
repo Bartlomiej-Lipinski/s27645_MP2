@@ -8,19 +8,21 @@ public class Owner {
     private String surname;
     private Set<CarRepairShop> owns = new HashSet<>();
 
-    public Owner(String name, String surname) {
+    public Owner(String name, String surname,CarRepairShop shop) {
+        owns.add(shop);
+        shop.addOwner(this);
         this.name = name;
         this.surname = surname;
     }
 
     public void addShop(CarRepairShop shop) {
-        if (owns.add(shop)){
+        if (owns.add(shop)) {
             shop.addOwner(this);
         }
     }
 
     public void removeShop(CarRepairShop shop) {
-        if (owns.remove(shop)){
+        if (owns.remove(shop)) {
             shop.removeOwner(this);
         }
     }
@@ -28,11 +30,13 @@ public class Owner {
     public Set<CarRepairShop> getOwns() {
         return Collections.unmodifiableSet(owns);
     }
+
     public void removeTowTruck(String registrationNumber) {
         for (CarRepairShop shop : owns) {
             shop.removeTowTruck(registrationNumber);
         }
     }
+
     private void checkStringForEmptyAndBlank(String string, String message) {
         if (string.isEmpty()) {
             throw new IllegalArgumentException(message);
@@ -41,11 +45,13 @@ public class Owner {
             throw new IllegalArgumentException(message);
         }
     }
+
     private void checkForNullValue(String string, String message) {
         if (string == null) {
             throw new IllegalArgumentException(message);
         }
     }
+
     public CarRepairShop getCarRepairShop(String place) {
         for (CarRepairShop shop : owns) {
             if (shop.getPlace().equals(place)) {
@@ -54,7 +60,8 @@ public class Owner {
         }
         return null;
     }
-/// ///////////getters and setters
+
+    /// ///////////getters and setters
     public String getName() {
         return name;
     }
@@ -70,7 +77,7 @@ public class Owner {
     }
 
     public void setSurname(String surname) {
-        checkForNullValue(surname," Surname cannot be null");
+        checkForNullValue(surname, " Surname cannot be null");
         checkStringForEmptyAndBlank(surname, "Surname cannot be empty or blank");
         this.surname = surname;
     }

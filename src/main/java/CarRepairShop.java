@@ -7,7 +7,11 @@ public class CarRepairShop  {
     private Set<Owner> isOwned = new HashSet<>();
     private final List<WorkPlace> workPlace = new ArrayList<>();
 
-    public CarRepairShop(String place) {
+    public CarRepairShop(String place,Employment employment,Owner owner,TowTruck towTruck,WorkPlace workPlace) {
+        employments.add(employment);
+        belongsTo.put(towTruck.getRegistrationNumber(), towTruck);
+        isOwned.add(owner);
+        this.workPlace.add(workPlace);
         this.place = place;
     }
 
@@ -20,6 +24,13 @@ public class CarRepairShop  {
         }
         this.workPlace.add(workPlace);
     }
+
+    public void removeWorkPlace(WorkPlace workPlace) {
+        if (this.workPlace.remove(workPlace)) {
+            workPlace.removeShop();
+        }
+    }
+
     public void setEmployment(Employment e) {
         if (employments.add(e)){
             e.setShop(this);
@@ -46,18 +57,18 @@ public class CarRepairShop  {
             truck.setBelongsTo(this);
         }
     }
-    public TowTruck findTowTruck(String regNum) throws NullPointerException{
-        if (!belongsTo.containsKey(regNum)) {
-            throw new NullPointerException("Tow truck with this registration number does not exist");
-        }
-        return belongsTo.get(regNum);
-    }
-
     public void removeTowTruck(String registrationNumber) {
         TowTruck removed = belongsTo.remove(registrationNumber);
         if (removed != null){
             removed.setBelongsTo(null);
         }
+    }
+
+    public TowTruck findTowTruck(String regNum) throws NullPointerException{
+        if (!belongsTo.containsKey(regNum)) {
+            throw new NullPointerException("Tow truck with this registration number does not exist");
+        }
+        return belongsTo.get(regNum);
     }
 
     public TowTruck getTowTruck(String regNum) {

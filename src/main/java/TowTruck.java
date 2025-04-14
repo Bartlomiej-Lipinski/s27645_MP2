@@ -9,7 +9,9 @@ public class TowTruck {
     private String registrationNumber;
     private CarRepairShop belongsTo;
 
-    public TowTruck(String type, String registrationNumber) {
+    public TowTruck(String type, String registrationNumber, CarRepairShop belongsTo) {
+        this.belongsTo = belongsTo;
+        belongsTo.addTowTruck(this);
         this.type = type;
         this.registrationNumber = registrationNumber;
         registrationNumbers.add(registrationNumber);

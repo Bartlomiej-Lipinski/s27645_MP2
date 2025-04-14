@@ -8,17 +8,24 @@ public class WorkPlace  {
 
     private WorkPlace(CarRepairShop shop) {
         this.shop = shop;
+        shop.addWorkPlace(this);
         this.tools = new ArrayList<>();
     }
 
-    public WorkPlace workPlace(CarRepairShop shop, List<String> tools) throws NullPointerException{
+    public static WorkPlace workPlace(CarRepairShop shop, List<String> tools) throws NullPointerException{
         if (shop == null) {
             throw new NullPointerException("Warsztat nie może być null");
         }
         WorkPlace workPlace = new WorkPlace(shop);
         shop.addWorkPlace(workPlace);
-        this.tools= tools;
+        workPlace.setTools(tools);
         return workPlace;
+    }
+    public void removeShop() {
+        if (shop != null) {
+            shop.removeWorkPlace(this);
+            shop = null;
+        }
     }
 
     public CarRepairShop getShop() {
