@@ -1,18 +1,18 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class TowTruck {
+    private static List<String> registrationNumbers = new ArrayList<>(); // zapewnienei że nr rejestracyjny jest unikalny
     private String type;
-    private int amountOfCars;
-    private String carType;
     private String registrationNumber;
     private CarRepairShop belongsTo;
 
-    public TowTruck(String type, int amountOfCars, String carType, String registrationNumber) {
+    public TowTruck(String type, String registrationNumber) {
         this.type = type;
-        this.amountOfCars = amountOfCars;
-        this.carType = carType;
         this.registrationNumber = registrationNumber;
+        registrationNumbers.add(registrationNumber);
     }
 
     public String getRegistrationNumber() {
@@ -20,11 +20,21 @@ public class TowTruck {
     }
 
     public void setBelongsTo(CarRepairShop belongsTo) {
+        if (belongsTo == null) {
+            throw new IllegalArgumentException("CarRepairShop is null");
+        }
         this.belongsTo = belongsTo;
     }
+    public CarRepairShop getBelongsTo() {
+        return belongsTo;
+    }
+
     public void setRegistrationNumber(String registrationNumber) {
         checkForNullValue(registrationNumber, "Registration number is null");
         checkStringForEmptyAndBlank(registrationNumber, "Registration number is empty or contains only spaces");
+        if (registrationNumbers.contains(registrationNumber)){
+            throw new IllegalArgumentException("Registration number already exists");
+        }
         Pattern pattern = Pattern.compile("^[A-Z]{2}\\d{5}$");
         if (!pattern.matcher(registrationNumber).matches()) {
             throw new IllegalArgumentException("Registration number is invalid");
@@ -49,8 +59,6 @@ public class TowTruck {
     public String toString() {
         return "TowTruck{" +
                 "type='" + type + '\'' +
-                ", amountOfCars=" + amountOfCars +
-                ", carType='" + carType + '\'' +
                 ", registrationNumber='" + registrationNumber + '\'' +
                 ", belongsTo=" + belongsTo +
                 '}';
@@ -60,11 +68,11 @@ public class TowTruck {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         TowTruck towTruck = (TowTruck) o;
-        return amountOfCars == towTruck.amountOfCars && Objects.equals(type, towTruck.type) && Objects.equals(carType, towTruck.carType) && Objects.equals(registrationNumber, towTruck.registrationNumber) && Objects.equals(belongsTo, towTruck.belongsTo);
+        return  Objects.equals(type, towTruck.type) && Objects.equals(registrationNumber, towTruck.registrationNumber) && Objects.equals(belongsTo, towTruck.belongsTo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, amountOfCars, carType, registrationNumber, belongsTo);
+        return Objects.hash(type, registrationNumber, belongsTo);
     }
 }

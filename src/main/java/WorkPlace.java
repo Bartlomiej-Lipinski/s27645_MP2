@@ -4,18 +4,20 @@ import java.util.Objects;
 
 public class WorkPlace  {
     private List<String> tools;
-    private final CarRepairShop shop;
+    private CarRepairShop shop;
 
     private WorkPlace(CarRepairShop shop) {
         this.shop = shop;
         this.tools = new ArrayList<>();
     }
-    public WorkPlace WorkPlace(CarRepairShop shop, List<String> tools) throws Exception{
+
+    public WorkPlace workPlace(CarRepairShop shop, List<String> tools) throws NullPointerException{
         if (shop == null) {
-            throw new Exception("Warsztat nie może być null");
+            throw new NullPointerException("Warsztat nie może być null");
         }
         WorkPlace workPlace = new WorkPlace(shop);
         shop.addWorkPlace(workPlace);
+        this.tools= tools;
         return workPlace;
     }
 

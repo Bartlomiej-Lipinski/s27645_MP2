@@ -6,14 +6,12 @@ import java.util.Set;
 
 public class Mechanic {
     private String specialization;
-    private LocalDate birthday;
     private String name;
     private String surname;
     private Set<Employment> employments = new HashSet<>();
 
-    public Mechanic(String specialization, LocalDate birthday, String name, String surname) {
+    public Mechanic(String specialization, String name, String surname) {
         this.specialization = specialization;
-        this.birthday = birthday;
         this.name = name;
         this.surname = surname;
     }
@@ -22,7 +20,8 @@ public class Mechanic {
         return Collections.unmodifiableSet(employments);
     }
 
-    void addEmployment(Employment employment) {
+
+    public void addEmployment(Employment employment) {
         if (employments.add(employment)) {
             employment.setMechanic(this);
         }
@@ -39,15 +38,9 @@ public class Mechanic {
     }
 
     public void setSpecialization(String specialization) {
+        checkForNullValue(specialization,"Specialization cannot be null");
+        checkStringForEmptyAndBlank(specialization,"Specialization cannot be empty or blank");
         this.specialization = specialization;
-    }
-
-    public LocalDate getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(LocalDate birthday) {
-        this.birthday = birthday;
     }
 
     public String getName() {
@@ -55,6 +48,8 @@ public class Mechanic {
     }
 
     public void setName(String name) {
+        checkForNullValue(name,"Name cannot be null");
+        checkStringForEmptyAndBlank(name,"Name cannot be empty or blank");
         this.name = name;
     }
 
@@ -63,26 +58,40 @@ public class Mechanic {
     }
 
     public void setSurname(String surname) {
+        checkForNullValue(surname,"Surname cannot be null");
+        checkStringForEmptyAndBlank(surname,"Surname cannot be empty or blank");
         this.surname = surname;
+    }
+    private void checkStringForEmptyAndBlank(String string, String message) {
+        if (string.isEmpty()) {
+            throw new IllegalArgumentException(message);
+        }
+        if (string.isBlank()) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+    private void checkForNullValue(String string, String message) {
+        if (string == null) {
+            throw new IllegalArgumentException(message);
+        }
     }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////overrides
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Mechanic mechanic = (Mechanic) o;
-        return Objects.equals(specialization, mechanic.specialization) && Objects.equals(birthday, mechanic.birthday) && Objects.equals(name, mechanic.name) && Objects.equals(surname, mechanic.surname) && Objects.equals(employments, mechanic.employments);
+        return Objects.equals(specialization, mechanic.specialization) && Objects.equals(name, mechanic.name) && Objects.equals(surname, mechanic.surname) && Objects.equals(employments, mechanic.employments);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(specialization, birthday, name, surname, employments);
+        return Objects.hash(specialization, name, surname, employments);
     }
 
     @Override
     public String toString() {
         return "Mechanic{" +
                 "specialization='" + specialization + '\'' +
-                ", birthday=" + birthday +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 ", employments=" + employments +

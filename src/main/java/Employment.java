@@ -17,17 +17,21 @@ public class Employment {
     }
 
     public void setMechanic(Mechanic mechanic) {
-        if (this.mechanic != null){
+        if (this.mechanic != null) {
             this.mechanic.removeEmployment(this);
         }
+        mechanic.addEmployment(this);
         this.mechanic = mechanic;
-        if (mechanic != null) mechanic.addEmployment(this);
+        mechanic.addEmployment(this);
     }
 
     public void setShop(CarRepairShop shop) {
-        if (this.shop != null) this.shop.removeEmployment(this);
+        if (this.shop != null){
+            this.shop.removeEmployment(this);
+        }
+        shop.setEmployment(this);
         this.shop = shop;
-        if (shop != null) shop.setEmployment(this);
+        shop.setEmployment(this);
     }
 
     public int getHowManyHoursShift() {
@@ -35,6 +39,12 @@ public class Employment {
     }
 
     public void setHowManyHoursShift(int howManyHoursShift) {
+        if (howManyHoursShift < 0) {
+            throw new IllegalArgumentException("Hours cannot be negative");
+        }
+        if (howManyHoursShift > 24) {
+            throw new IllegalArgumentException("Hours cannot be more than 24");
+        }
         this.howManyHoursShift = howManyHoursShift;
     }
 
@@ -43,6 +53,9 @@ public class Employment {
     }
 
     public void setSalary(double salary) {
+        if (salary < 0) {
+            throw new IllegalArgumentException("Salary cannot be negative");
+        }
         this.salary = salary;
     }
 
@@ -51,13 +64,16 @@ public class Employment {
     }
 
     public void setFired(LocalDate fired) {
+        if (fired != null && fired.isBefore(employed)) {
+            throw new IllegalArgumentException("Fired date cannot be before employed date");
+        }
+        if (this.fired != null) {
+            throw new IllegalArgumentException("Already fired");
+        }
+        if (fired != null && fired.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Fired date cannot be in the future");
+        }
         this.fired = fired;
-    }
-
-    public void terminate(LocalDate firedDate) {
-        this.fired = firedDate;
-        if (this.mechanic != null) this.mechanic.removeEmployment(this);
-        if (this.shop != null) this.shop.removeEmployment(this);
     }
 
     public LocalDate getEmployed() {
@@ -65,6 +81,15 @@ public class Employment {
     }
 
     public void setEmployed(LocalDate employed) {
+        if (employed == null) {
+            throw new IllegalArgumentException("Employed date cannot be null");
+        }
+        if (employed.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Employed date cannot be in the future");
+        }
+        if (this.employed != null) {
+            throw new IllegalArgumentException("Already employed");
+        }
         this.employed = employed;
     }
 
