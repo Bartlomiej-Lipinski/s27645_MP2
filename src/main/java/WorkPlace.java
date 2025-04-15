@@ -8,13 +8,12 @@ public class WorkPlace  {
 
     private WorkPlace(CarRepairShop shop) {
         this.shop = shop;
-        shop.addWorkPlace(this);
         this.tools = new ArrayList<>();
     }
 
-    public static WorkPlace workPlace(CarRepairShop shop, List<String> tools) throws NullPointerException{
+    public static WorkPlace workPlace(CarRepairShop shop, List<String> tools) throws IllegalArgumentException{
         if (shop == null) {
-            throw new NullPointerException("Warsztat nie może być null");
+            throw new IllegalArgumentException("Warsztat nie może być null");
         }
         WorkPlace workPlace = new WorkPlace(shop);
         shop.addWorkPlace(workPlace);

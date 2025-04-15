@@ -5,35 +5,92 @@ public class CarRepairShop  {
     private Set<Employment> employments = new HashSet<>();
     private Map<String, TowTruck> belongsTo = new HashMap<>();
     private Set<Owner> isOwned = new HashSet<>();
-    private final List<WorkPlace> workPlace = new ArrayList<>();
+    private final List<WorkPlace> workPlaces = new ArrayList<>();
 
-    public CarRepairShop(String place,Employment employment,Owner owner,TowTruck towTruck,WorkPlace workPlace) {
+    public CarRepairShop(String place, Owner owner, TowTruck towTruck, WorkPlace workPlace) {
+        setPlace(place);
+        addOwner(owner);
+        addTowTruck(towTruck);
+        addWorkPlace(workPlace);
+    }
+
+    public void addEmployment(Employment employment) {
+        if (employment == null) {
+            throw new IllegalArgumentException("Employment cannot be null");
+        }
         employments.add(employment);
-        belongsTo.put(towTruck.getRegistrationNumber(), towTruck);
-        isOwned.add(owner);
-        this.workPlace.add(workPlace);
-        this.place = place;
+    }
+
+    public void removeEmployment(Employment employment) {
+        employments.remove(employment);
+    }
+
+    public void removeCarRepairShop() {
+        Set<Employment> temp = new HashSet<>(employments);
+        for (Employment employment : temp) {
+            employment.removeEmployment();
+        }
+        for (TowTruck towTruck : belongsTo.values()) {
+            towTruck.setBelongsTo(null);
+        }
+        for (Owner owner : isOwned) {
+            owner.removeShop(this);
+        }
+        for (WorkPlace wp : new ArrayList<>(workPlaces)) {
+            wp.removeShop();
+        }
     }
 
     public void addWorkPlace(WorkPlace workPlace) {
-        if (this.workPlace.contains(workPlace)) {
-            throw new IllegalArgumentException("Workplace already exists");
-        }
         if (workPlace == null) {
             throw new IllegalArgumentException("Workplace cannot be null");
         }
-        this.workPlace.add(workPlace);
+        if (this.workPlaces.contains(workPlace)) {
+            throw new IllegalArgumentException("Workplace already exists");
+        }
+        this.workPlaces.add(workPlace);
     }
 
     public void removeWorkPlace(WorkPlace workPlace) {
-        if (this.workPlace.remove(workPlace)) {
+        if (this.workPlaces.remove(workPlace)) {
             workPlace.removeShop();
         }
     }
 
-    public void setEmployment(Employment e) {
-        if (employments.add(e)){
-            e.setShop(this);
+    public void addTowTruck(TowTruck truck) {
+        if (truck == null) {
+            throw new IllegalArgumentException("TowTruck cannot be null");
+        }
+        if (!belongsTo.containsKey(truck.getRegistrationNumber())){
+            belongsTo.put(truck.getRegistrationNumber(), truck);
+            truck.setBelongsTo(this);
+        }else {
+            throw new IllegalArgumentException("TowTruck with this registration number already exists");
+        }
+    }
+
+    public void removeTowTruck(String registrationNumber) {
+        TowTruck removed = belongsTo.remove(registrationNumber);
+        if (removed != null){
+            removed.setBelongsTo(null);
+        }
+    }
+
+    public void addOwner(Owner owner) {
+        if (owner == null) {
+            throw new IllegalArgumentException("Owner cannot be null");
+        }
+        if (isOwned.contains(owner)){
+            throw new IllegalArgumentException("Owner already exists");
+        }
+        if (isOwned.add(owner)) {
+            owner.addShop(this);
+        }
+    }
+
+    public void removeOwner(Owner owner) {
+        if (isOwned.remove(owner)) {
+            owner.removeShop(this);
         }
     }
 
@@ -47,73 +104,18 @@ public class CarRepairShop  {
         this.place = place;
     }
 
-    public void removeEmployment(Employment e) {
-        if (employments.remove(e)) e.removeShop();
-    }
-
-    public void addTowTruck(TowTruck truck) {
-        if (!belongsTo.containsKey(truck.getRegistrationNumber())){
-            belongsTo.put(truck.getRegistrationNumber(), truck);
-            truck.setBelongsTo(this);
-        }
-    }
-    public void removeTowTruck(String registrationNumber) {
-        TowTruck removed = belongsTo.remove(registrationNumber);
-        if (removed != null){
-            removed.setBelongsTo(null);
-        }
-    }
-
-    public TowTruck findTowTruck(String regNum) throws NullPointerException{
-        if (!belongsTo.containsKey(regNum)) {
-            throw new NullPointerException("Tow truck with this registration number does not exist");
-        }
-        return belongsTo.get(regNum);
-    }
-
-    public TowTruck getTowTruck(String regNum) {
-        return belongsTo.get(regNum);
-    }
-
-    public void addOwner(Owner owner) {
-        if (isOwned.add(owner)) {
-            owner.addShop(this);
-        }
-    }
-
-    public void removeOwner(Owner owner) {
-        if (isOwned.remove(owner)) {
-            owner.removeShop(this);
-        }
-    }
-    public Owner getOwner(String name, String surname) {
-        for (Owner owner : isOwned) {
-            if (owner.getName().equals(name) && owner.getSurname().equals(surname)) {
-                return owner;
-            }
-        }
-        return null;
-    }
-    public void getTowTruck(){
-        for (Map.Entry<String, TowTruck> entry : belongsTo.entrySet()) {
-            System.out.println("Registration number: " + entry.getKey() + ", Tow truck: " + entry.getValue());
-        }
-    }
-
     private void checkStringForEmptyAndBlank(String string, String message) {
-        if (string.isEmpty()) {
-            throw new IllegalArgumentException(message);
-        }
-        if (string.isBlank()) {
+        if (string.isEmpty() || string.isBlank()) {
             throw new IllegalArgumentException(message);
         }
     }
+
     private void checkForNullValue(String string, String message) {
         if (string == null) {
             throw new IllegalArgumentException(message);
         }
     }
-////////////////////////////////////////////////////////////////////////////////////overrides
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -122,12 +124,12 @@ public class CarRepairShop  {
                 && Objects.equals(employments, that.employments)
                 && Objects.equals(belongsTo, that.belongsTo)
                 && Objects.equals(isOwned, that.isOwned)
-                && Objects.equals(workPlace, that.workPlace);
+                && Objects.equals(workPlaces, that.workPlaces);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(place, employments, belongsTo, isOwned, workPlace);
+        return Objects.hash(place, employments, belongsTo, isOwned, workPlaces);
     }
 
     @Override
@@ -137,7 +139,8 @@ public class CarRepairShop  {
                 ", employments=" + employments +
                 ", towTrucks=" + belongsTo +
                 ", owners=" + isOwned +
-                ", workPlace=" + workPlace +
+                ", workPlaces=" + workPlaces +
                 '}';
     }
 }
+

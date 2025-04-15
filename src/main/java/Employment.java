@@ -1,103 +1,111 @@
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Employment {
-    private LocalDate employed;
+    private final LocalDate employed;
     private LocalDate fired;
     private double salary;
     private int howManyHoursShift;
-    private Mechanic mechanic;
-    private CarRepairShop shop;
+    private final Mechanic mechanic;
+    private final CarRepairShop shop;
 
     public Employment(LocalDate employed, double salary, int hours, Mechanic mechanic, CarRepairShop shop) {
+        if (employed == null || mechanic == null || shop == null) {
+            throw new IllegalArgumentException("Żaden z parametrów (data, mechanik, warsztat) nie może być null.");
+        }
+        if (salary < 0) {
+            throw new IllegalArgumentException("Wynagrodzenie nie może być ujemne.");
+        }
+        if (hours < 0 || hours > 24) {
+            throw new IllegalArgumentException("Liczba godzin zmiany musi być w przedziale 0-24.");
+        }
         this.employed = employed;
         this.salary = salary;
         this.howManyHoursShift = hours;
-        this.setMechanic(mechanic);
-        this.setShop(shop);
-    }
-
-    public void setMechanic(Mechanic mechanic) {
-        if (this.mechanic != null) {
-            this.mechanic.removeEmployment(this);
-        }
-        mechanic.addEmployment(this);
         this.mechanic = mechanic;
-        mechanic.addEmployment(this);
-    }
-
-    public void setShop(CarRepairShop shop) {
-        if (this.shop != null){
-            this.shop.removeEmployment(this);
-        }
-        shop.setEmployment(this);
         this.shop = shop;
-        shop.setEmployment(this);
-    }
 
-    public int getHowManyHoursShift() {
-        return howManyHoursShift;
-    }
-
-    public void setHowManyHoursShift(int howManyHoursShift) {
-        if (howManyHoursShift < 0) {
-            throw new IllegalArgumentException("Hours cannot be negative");
-        }
-        if (howManyHoursShift > 24) {
-            throw new IllegalArgumentException("Hours cannot be more than 24");
-        }
-        this.howManyHoursShift = howManyHoursShift;
-    }
-
-    public double getSalary() {
-        return salary;
-    }
-
-    public void setSalary(double salary) {
-        if (salary < 0) {
-            throw new IllegalArgumentException("Salary cannot be negative");
-        }
-        this.salary = salary;
-    }
-
-    public LocalDate getFired() {
-        return fired;
-    }
-
-    public void setFired(LocalDate fired) {
-        if (fired != null && fired.isBefore(employed)) {
-            throw new IllegalArgumentException("Fired date cannot be before employed date");
-        }
-        if (this.fired != null) {
-            throw new IllegalArgumentException("Already fired");
-        }
-        if (fired != null && fired.isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException("Fired date cannot be in the future");
-        }
-        this.fired = fired;
+        mechanic.addEmployment(this);
+        shop.addEmployment(this);
     }
 
     public LocalDate getEmployed() {
         return employed;
     }
 
-    public void setEmployed(LocalDate employed) {
-        if (employed == null) {
-            throw new IllegalArgumentException("Employed date cannot be null");
-        }
-        if (employed.isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException("Employed date cannot be in the future");
-        }
-        if (this.employed != null) {
-            throw new IllegalArgumentException("Already employed");
-        }
-        this.employed = employed;
+    public LocalDate getFired() {
+        return fired;
     }
 
-    public void removeMechanic() {
-        this.mechanic = null;
+    public double getSalary() {
+        return salary;
     }
 
-    public void removeShop() {
-        this.shop = null;
+    public int getHowManyHoursShift() {
+        return howManyHoursShift;
+    }
+
+    public Mechanic getMechanic() {
+        return mechanic;
+    }
+
+    public CarRepairShop getShop() {
+        return shop;
+    }
+
+    public void setSalary(double salary) {
+        if (salary < 0) {
+            throw new IllegalArgumentException("Wynagrodzenie nie może być ujemne.");
+        }
+        this.salary = salary;
+    }
+
+    public void setHowManyHoursShift(int hours) {
+        if (hours < 0 || hours > 24) {
+            throw new IllegalArgumentException("Liczba godzin zmiany musi być w przedziale 0-24.");
+        }
+        this.howManyHoursShift = hours;
+    }
+
+    public void setFired(LocalDate fired) {
+        if (fired != null && fired.isBefore(employed)) {
+            throw new IllegalArgumentException("Data zwolnienia nie może być wcześniejsza niż data zatrudnienia.");
+        }
+        if (this.fired != null) {
+            throw new IllegalArgumentException("Obecnie istnieje ustalona data zwolnienia.");
+        }
+        if (fired != null && fired.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Data zwolnienia nie może być w przyszłości.");
+        }
+        this.fired = fired;
+    }
+
+    public void removeEmployment() {
+        mechanic.removeEmployment(this);
+        shop.removeEmployment(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Employment that = (Employment) o;
+        return Double.compare(salary, that.salary) == 0 && howManyHoursShift == that.howManyHoursShift && Objects.equals(employed, that.employed) && Objects.equals(fired, that.fired) && Objects.equals(mechanic, that.mechanic) && Objects.equals(shop, that.shop);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(employed, fired, salary, howManyHoursShift, mechanic, shop);
+    }
+
+    @Override
+    public String toString() {
+        return "Employment{" +
+                "employed=" + employed +
+                ", fired=" + fired +
+                ", salary=" + salary +
+                ", howManyHoursShift=" + howManyHoursShift +
+                ", mechanic=" + mechanic +
+                ", shop=" + shop +
+                '}';
     }
 }

@@ -6,14 +6,14 @@ import java.util.regex.Pattern;
 public class TowTruck {
     private static List<String> registrationNumbers = new ArrayList<>(); // zapewnienei że nr rejestracyjny jest unikalny
     private String type;
-    private String registrationNumber;
+    private final String registrationNumber;
     private CarRepairShop belongsTo;
 
     public TowTruck(String type, String registrationNumber, CarRepairShop belongsTo) {
         this.belongsTo = belongsTo;
         belongsTo.addTowTruck(this);
         this.type = type;
-        this.registrationNumber = registrationNumber;
+        this.registrationNumber = checkRegistrationNumber(registrationNumber);
         registrationNumbers.add(registrationNumber);
     }
 
@@ -22,16 +22,13 @@ public class TowTruck {
     }
 
     public void setBelongsTo(CarRepairShop belongsTo) {
-        if (belongsTo == null) {
-            throw new IllegalArgumentException("CarRepairShop is null");
-        }
         this.belongsTo = belongsTo;
     }
     public CarRepairShop getBelongsTo() {
         return belongsTo;
     }
 
-    public void setRegistrationNumber(String registrationNumber) {
+    private String checkRegistrationNumber(String registrationNumber) {
         checkForNullValue(registrationNumber, "Registration number is null");
         checkStringForEmptyAndBlank(registrationNumber, "Registration number is empty or contains only spaces");
         if (registrationNumbers.contains(registrationNumber)){
@@ -41,7 +38,7 @@ public class TowTruck {
         if (!pattern.matcher(registrationNumber).matches()) {
             throw new IllegalArgumentException("Registration number is invalid");
         }
-        this.registrationNumber = registrationNumber;
+        return registrationNumber;
     }
     private void checkStringForEmptyAndBlank(String string, String message) {
         if (string.isEmpty()) {

@@ -9,28 +9,25 @@ public class Mechanic {
     private String surname;
     private Set<Employment> employments = new HashSet<>();
 
-    public Mechanic(String specialization, String name, String surname, Employment employment) {
-        employments.add(employment);
-        this.specialization = specialization;
-        this.name = name;
-        this.surname = surname;
+    public Mechanic(String specialization, String name, String surname) {
+        setSpecialization(specialization);
+        setName(name);
+        setSurname(surname);
     }
 
     public Set<Employment> getEmployments() {
         return Collections.unmodifiableSet(employments);
     }
 
-
     public void addEmployment(Employment employment) {
-        if (employments.add(employment)) {
-            employment.setMechanic(this);
+        if (employment == null) {
+            throw new IllegalArgumentException("Employment nie może być null.");
         }
+        employments.add(employment);
     }
 
-    void removeEmployment(Employment employment) {
-        if (employments.remove(employment)) {
-            employment.removeMechanic();
-        }
+    public void removeEmployment(Employment employment) {
+        employments.remove(employment);
     }
 
     public String getSpecialization() {
@@ -64,10 +61,7 @@ public class Mechanic {
     }
 
     private void checkStringForEmptyAndBlank(String string, String message) {
-        if (string.isEmpty()) {
-            throw new IllegalArgumentException(message);
-        }
-        if (string.isBlank()) {
+        if (string.isEmpty() || string.isBlank()) {
             throw new IllegalArgumentException(message);
         }
     }
@@ -78,12 +72,14 @@ public class Mechanic {
         }
     }
 
-    /// /////////////////////////////////////////////////////////////////////////////////////////////////////////overrides
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Mechanic mechanic = (Mechanic) o;
-        return Objects.equals(specialization, mechanic.specialization) && Objects.equals(name, mechanic.name) && Objects.equals(surname, mechanic.surname) && Objects.equals(employments, mechanic.employments);
+        return Objects.equals(specialization, mechanic.specialization) &&
+                Objects.equals(name, mechanic.name) &&
+                Objects.equals(surname, mechanic.surname) &&
+                Objects.equals(employments, mechanic.employments);
     }
 
     @Override
@@ -97,7 +93,6 @@ public class Mechanic {
                 "specialization='" + specialization + '\'' +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
-                ", employments=" + employments +
                 '}';
     }
 }
